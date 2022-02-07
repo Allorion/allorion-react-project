@@ -8,7 +8,7 @@ import {
     Routes,
     Route,
 } from "react-router-dom";
-import {Link} from "@mui/material";
+import ResumeCreateTemplate from "./pages/resume/ResumeCreateTemplate";
 
 
 const App = () => {
@@ -20,6 +20,7 @@ const App = () => {
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="resume/" element={<ResumeTemplate />} />
+                    <Route path="resume-create/" element={<ResumeCreateTemplate />} />
                 </Routes>
             </BrowserRouter>
         </ColorModeContext>

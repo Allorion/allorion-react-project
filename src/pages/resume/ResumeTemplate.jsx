@@ -12,6 +12,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import LanguageIcon from '@mui/icons-material/Language';
 import ContactsIcon from '@mui/icons-material/Contacts';
 import StarIcon from '@mui/icons-material/Star';
+import ModeEditIcon from '@mui/icons-material/ModeEdit';
+import {Link} from "react-router-dom";
 
 const labels = {
     1: 'Junior',
@@ -31,11 +33,15 @@ export default function ResumeTemplate() {
             <Container>
                 <Grid container pt={4} pb={10}>
                     <Grid item sm={12} xs={12} md={12} xl={12}>
+                        <Link to="resume-create/" style={{
+                            textDecoration: 'none'
+                        }}>
+                            <ModeEditIcon sx={{color: 'text.primary'}}/>
+                        </Link>
                         <Paper elevation={4}>
                             <Box p={3}>
                                 <Grid container>
                                     <Grid item sm={12} xs={12} md={8} xl={8}>
-
                                         {/* Блок фото и ФИО автора */}
                                         <Box className="head">
                                             <Stack spacing={4} direction='row'>

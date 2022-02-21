@@ -16,11 +16,11 @@ const App = () => {
     return (
         <ColorModeContext>
             <BrowserRouter>
-                <ResponsiveAppBar />
+                <ResponsiveAppBar/>
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="resume/" element={<ResumeTemplate />} />
-                    <Route path="resume-create/" element={<ResumeCreateTemplate />} />
+                    <Route path="resume/create/" element={<ResumeCreateTemplate />} />
                 </Routes>
             </BrowserRouter>
         </ColorModeContext>

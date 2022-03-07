@@ -1,61 +1,52 @@
-import React, {useContext, useEffect, useState} from 'react';
+// *******************************************
+// Компонент с формой "Образование" для резюме
+// *******************************************
 
-// MUI
-import {
-    Box,
-    Container,
-    FormControl,
-    FormHelperText,
-    Grid,
-    InputLabel,
-    Paper,
-    Select,
-    Stack,
-    TextField,
-    MenuItem
-} from "@mui/material";
-import {LocalizationProvider, MobileDatePicker} from "@mui/lab";
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
+
+import React, {useContext, useEffect} from "react";
 
 // Пользовательские хуки
-import useForm from "../../../globalComponents/hooks/useForm";
+import useForm from "../../../../globalComponents/hooks/useForm";
 
 // Контекст
-import EducationContext from "../context/EducationContext";
+import EducationFormContext from "../context/EducationFormContext";
 
-// Дополнительные модули
-import ruLocale from 'date-fns/locale/ru';
+// MUI
+import {FormControl, FormHelperText, Grid, InputLabel, Paper, Select, Stack, TextField} from "@mui/material";
+import Container from "@mui/material/Container";
+import IconButton from "@mui/material/IconButton";
+import DeleteIcon from "@mui/icons-material/Delete";
+import {LocalizationProvider, MobileDatePicker} from "@mui/lab";
+import AdapterDateFns from "@mui/lab/AdapterDateFns";
+import MenuItem from "@mui/material/MenuItem";
+import Box from "@mui/material/Box";
 
-const Education = props => {
+// Сторонние модули
+import {ru} from "date-fns/locale";
 
-    // Стейт полей формы
-    const [educationField, setEducationField] = useState({
-        educationalInstitution: '', faculty: '', specialization: '', yearGraduation: null, formTraining: ''
-    });
 
-    // Добавление контекста родительского компонента
-    const setValues = useContext(EducationContext);
+// Стандартные значения полей формы для отправки в пользовательский хук заполнения формы
+const educationField = {
+    educationalInstitution: '', faculty: '', specialization: '', yearGraduation: null, formTraining: ''
+};
 
-    // Добавляем пользовательский хук для добавления данных в стейт компонента
-    const {handleChange} = useForm(setEducationField);
+const EducationForm = props => {
 
-    // Добавление в стейт блока полей формы
+    // Получаем функции из пользовательского хука для заполнения формы
+    const {value, handleChange, handleInputDate} = useForm(educationField);
+
+    // Получаем данные из родительского компонента
+    const setEducationField = useContext(EducationFormContext);
+
+    // Передаем данные в родительский компонент при изменении полей формы
     useEffect(() => {
-        setValues(values => ({
+        setEducationField(values => ({
             ...values,
-            [props.count]: educationField
+            ['education' + props.keyCount]: value
         }));
-    }, [props.count, setValues, educationField]);
+    }, [props.keyCount, setEducationField, value]);
 
-    // Блок добавления данных не подходящих для добавления через пользовательский хук
-    const handleYearGraduation = event => {
-        setEducationField(value => ({
-            ...value,
-            'yearGraduation': event
-        }));
-    };
-
-    return(
+    return (
         <React.Fragment>
             <Grid container mt={2}>
                 <Grid item={true} xs={0} md={2} xl={2}/>
@@ -63,10 +54,15 @@ const Education = props => {
                     <Paper>
                         <Box pt={3} pb={3}>
                             <Container>
+                                <IconButton aria-label="delete" size="small" onClick={() => {
+                                    props.delete(props.keyCount)
+                                }}>
+                                    <DeleteIcon/>
+                                </IconButton>
                                 <TextField
                                     fullWidth
                                     name='educationalInstitution'
-                                    value={educationField.educationalInstitution}
+                                    value={value.educationalInstitution}
                                     onChange={handleChange}
                                     id='input-educational-institution'
                                     label="Учебное заведение"
@@ -76,7 +72,7 @@ const Education = props => {
                                 <TextField
                                     fullWidth
                                     name='faculty'
-                                    value={educationField.faculty}
+                                    value={value.faculty}
                                     onChange={handleChange}
                                     id='input-faculty'
                                     label="Факультет"
@@ -86,7 +82,7 @@ const Education = props => {
                                 <TextField
                                     fullWidth
                                     name='specialization'
-                                    value={educationField.specialization}
+                                    value={value.specialization}
                                     onChange={handleChange}
                                     id='input-specialization'
                                     label="Специальность"
@@ -94,18 +90,21 @@ const Education = props => {
                                     helperText='Укажите специальность полученную при обучении'
                                 />
                                 <Stack direction="row" spacing={2}>
-                                    <LocalizationProvider dateAdapter={AdapterDateFns} locale={ruLocale}>
+                                    <LocalizationProvider dateAdapter={AdapterDateFns} locale={ru}>
                                         <Stack>
                                             <MobileDatePicker
                                                 label="Год окончания"
                                                 views={['year']}
-                                                name='yearGraduation'
-                                                value={educationField.yearGraduation}
-                                                onChange={handleYearGraduation}
-                                                renderInput={(params) => <TextField {...params}
-                                                                                    variant='standard'
-                                                                                    helperText="Укажите год окончания обучения"
-                                                />}
+                                                value={value.yearGraduation}
+                                                onChange={(event) => {
+                                                    handleInputDate(event, 'yearGraduation')
+                                                }}
+                                                renderInput={(params) =>
+                                                    <TextField {...params}
+                                                               variant='standard'
+                                                               helperText="Укажите год окончания обучения"
+                                                    />
+                                                }
                                             />
                                         </Stack>
                                     </LocalizationProvider>
@@ -114,7 +113,7 @@ const Education = props => {
                                         <Select
                                             fullWidth
                                             name='formTraining'
-                                            value={educationField.formTraining}
+                                            value={value.formTraining}
                                             onChange={handleChange}
                                             labelId="select-form-training-label"
                                             id="select-form-training"
@@ -137,4 +136,4 @@ const Education = props => {
     );
 };
 
-export default React.memo(Education);
+export default React.memo(EducationForm);

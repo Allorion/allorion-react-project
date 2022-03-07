@@ -177,8 +177,9 @@ const ResponsiveAppBar = () => {
             <footer style={{
                 position: 'fixed',
                 left: 0,
-                right: 0,
-                bottom: 0
+                bottom: '-1px',
+                zIndex: 1000,
+                width: '100%'
             }}>
                 <AppBar position="static" sx={{
                     bgcolor: 'background.default',

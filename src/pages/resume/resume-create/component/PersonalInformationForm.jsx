@@ -1,4 +1,9 @@
-import React, {useContext} from 'react';
+// *********************************************************
+// Компонент с формой добавлением личной информации в резюме
+// *********************************************************
+
+
+import React, {useContext, useEffect} from "react";
 
 // MUI
 import {
@@ -23,29 +28,31 @@ import AdapterDateFns from '@mui/lab/AdapterDateFns';
 // Прочие модули
 import ruLocale from 'date-fns/locale/ru';
 
-// Контекст
+// Пользовательские хуки
+import useForm from "../../../../globalComponents/hooks/useForm";
+
+// Контексты
 import PersonalInformationContext from "../context/PersonalInformationContext";
 
-// Пользовательские хуки
-import useForm from "../../../globalComponents/hooks/useForm";
 
-function PersonalInformation() {
+const personalInformationField = {
+    city: '', move: '', citizenship: '', dateBirth: null, gender: '', maritalStatus: '', education: ''
+};
+
+
+const PersonalInformationForm = () => {
+
+    // Получаем функции из пользовательского хука для заполнения формы
+    const {value, handleChange, handleDate} = useForm(personalInformationField);
 
     // Получаем контекст из родительского компонента
-    const [values, setValues] = useContext(PersonalInformationContext);
+    const setPersonalInformationField = useContext(PersonalInformationContext);
 
-    // Получаем пользовательский хук для обновления данных в стейте
-    const {handleChange} = useForm(setValues);
+    // Сохраняем данные из формы в стейт родительского компонента
+    useEffect(() => {
+        setPersonalInformationField(value);
+    }, [setPersonalInformationField, value])
 
-    // Обновления данных не вохзможных для обновления через пользовательский хук
-    const handleDateBirth = event => {
-        setValues(value => ({
-            ...value,
-            'dateBirth': event
-        }));
-    };
-
-    // Вывод данных
     return (
         <React.Fragment>
             <Grid container mt={4}>
@@ -63,7 +70,7 @@ function PersonalInformation() {
                                             fullWidth
                                             required
                                             name='city'
-                                            value={values.city}
+                                            value={value.city}
                                             onChange={handleChange}
                                             id="input-city"
                                             label="Город проживания"
@@ -79,7 +86,7 @@ function PersonalInformation() {
                                                 labelId="select-move-label"
                                                 id="select-move"
                                                 name='move'
-                                                value={values.move}
+                                                value={value.move}
                                                 onChange={handleChange}
                                                 label="Переезд *"
                                             >
@@ -99,7 +106,7 @@ function PersonalInformation() {
                                     required
                                     fullWidth
                                     name='citizenship'
-                                    value={values.citizenship}
+                                    value={value.citizenship}
                                     onChange={handleChange}
                                     id="input-citizenship"
                                     label="Гражданство"
@@ -114,12 +121,14 @@ function PersonalInformation() {
                                             <MobileDatePicker
                                                 label="Дата рождения *"
                                                 name='dateBirth'
-                                                value={values.dateBirth}
-                                                onChange={handleDateBirth}
-                                                renderInput={(params) => <TextField {...params}
-                                                                                    variant='standard'
-                                                                                    helperText="Укажите дату рождения"
-                                                />}
+                                                value={value.dateBirth}
+                                                onChange={handleDate}
+                                                renderInput={(params) =>
+                                                    <TextField {...params}
+                                                               variant='standard'
+                                                               helperText="Укажите дату рождения"
+                                                    />
+                                                }
                                             />
                                         </Stack>
                                     </LocalizationProvider>
@@ -130,7 +139,7 @@ function PersonalInformation() {
                                             labelId="select-gender-label"
                                             id="select-gender"
                                             name='gender'
-                                            value={values.gender}
+                                            value={value.gender}
                                             onChange={handleChange}
                                             label="Пол *"
                                         >
@@ -150,7 +159,7 @@ function PersonalInformation() {
                                             labelId="select-marital-status-label"
                                             id="select-marital-status"
                                             name='maritalStatus'
-                                            value={values.maritalStatus}
+                                            value={value.maritalStatus}
                                             onChange={handleChange}
                                             label="Семейное положение *"
                                         >
@@ -167,7 +176,7 @@ function PersonalInformation() {
                                             labelId="select-education-label"
                                             id="select-education-status"
                                             nmae='education'
-                                            value={values.education}
+                                            value={value.education}
                                             onChange={handleChange}
                                             label="Образование *"
                                         >
@@ -187,6 +196,7 @@ function PersonalInformation() {
             </Grid>
         </React.Fragment>
     );
-}
+};
 
-export default React.memo(PersonalInformation);
+
+export default React.memo(PersonalInformationForm);

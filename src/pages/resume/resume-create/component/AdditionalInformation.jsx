@@ -1,10 +1,13 @@
-import React, {useContext} from 'react';
+// ************************************************
+// Компонент с формой для Дополнительной информации
+// ************************************************
+
+
+import React, {useContext, useEffect} from "react";
 
 // MUI
 import {
-    Box,
     Checkbox,
-    Container,
     FormControl,
     FormControlLabel,
     Grid,
@@ -12,19 +15,21 @@ import {
     ListItemText,
     OutlinedInput,
     Paper,
-    Select,
-    TextField,
-    Typography,
-    MenuItem
+    Select, TextField
 } from "@mui/material";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
+import MenuItem from "@mui/material/MenuItem";
+
+// Компоненты
+import useForm from "../../../../globalComponents/hooks/useForm";
 
 // Контекст
 import AdditionalInformationContext from "../context/AdditionalInformationContext";
 
-// Пользовательские хуки
-import useForm from "../../../globalComponents/hooks/useForm";
 
-
+// Данные для селекта с категориями прав
 const categories = [
     'A',
     'B',
@@ -49,33 +54,25 @@ const MenuProps = {
     },
 };
 
+// Данные для стейта формы
+const field = {
+    militaryService: false, driverLicense: [], recommendations: '', info: '', personalQualities: ''
+};
+
 const AdditionalInformation = () => {
 
-    // Получаем значение стейта родительского компонента через контектс
-    const [values, setValues] = useContext(AdditionalInformationContext);
+    // Получаем функции из пользовательского хука для заполнения формы
+    const {value, handleChange, handleCheckbox, handleSelectCheckbox} = useForm(field);
 
-    // Получаем пользовательский хук
-    const {handleChange} = useForm(setValues);
+    // Получаем контекст из родительского компонента
+    const setAdditionalInformationField = useContext(AdditionalInformationContext);
 
-    // Обновления данных не вохзможных для обновления через пользовательский хук
-    const handleDriverLicense = (event) => {
-        const {
-            target: { value },
-        } = event;
-        setValues((valueField) => ({
-            ...valueField,
-            'driverLicense': typeof value === 'string' ? value.split(',') : value,
-        }));
-    };
+    // Сохраняем данные из формы в стейт родительского компонента
+    useEffect(() => {
+        setAdditionalInformationField(value);
+    }, [setAdditionalInformationField, value]);
 
-    const handleMilitaryService = (event) => {
-        setValues(values => ({
-            ...values,
-            'militaryService': event.target.checked
-        }));
-    }
-
-    return(
+    return (
         <React.Fragment>
             <Grid container mt={4}>
                 <Grid item={true} xs={0} md={2} xl={2}/>
@@ -87,8 +84,9 @@ const AdditionalInformation = () => {
                         <Box pt={3} pb={3}>
                             <Container>
                                 <FormControlLabel
-                                    control={<Checkbox />}
-                                    onChange={handleMilitaryService}
+                                    control={<Checkbox/>}
+                                    name='militaryService'
+                                    onChange={handleCheckbox}
                                     label="Служба в армии"
                                 />
                             </Container>
@@ -99,16 +97,17 @@ const AdditionalInformation = () => {
                                         labelId="demo-driver-license-label"
                                         id="6-checkbox"
                                         multiple
-                                        value={values.driverLicense}
-                                        onChange={handleDriverLicense}
-                                        input={<OutlinedInput label="Категории водительских прав" />}
+                                        name='driverLicense'
+                                        value={value.driverLicense}
+                                        onChange={handleSelectCheckbox}
+                                        input={<OutlinedInput label="Категории водительских прав"/>}
                                         renderValue={(selected) => selected.join(', ')}
                                         MenuProps={MenuProps}
                                     >
                                         {categories.map((category) => (
                                             <MenuItem key={category} value={category}>
-                                                <Checkbox checked={values.driverLicense.indexOf(category) > -1} />
-                                                <ListItemText primary={category} />
+                                                <Checkbox checked={value.driverLicense.indexOf(category) > -1}/>
+                                                <ListItemText primary={category}/>
                                             </MenuItem>
                                         ))}
                                     </Select>
@@ -119,7 +118,7 @@ const AdditionalInformation = () => {
                                     label="Рекомендации"
                                     multiline
                                     name='recommendations'
-                                    value={values.recommendations}
+                                    value={value.recommendations}
                                     onChange={handleChange}
                                     variant="standard"
                                     helperText="Укажите рекомендации полученные с прошлого места работы\учебы"
@@ -130,7 +129,7 @@ const AdditionalInformation = () => {
                                     label="О себе"
                                     multiline
                                     name='info'
-                                    value={values.info}
+                                    value={value.info}
                                     onChange={handleChange}
                                     variant="standard"
                                     helperText="Расскажите о себе"
@@ -141,7 +140,7 @@ const AdditionalInformation = () => {
                                     label="Личные качества"
                                     multiline
                                     name='personalQualities'
-                                    value={values.personalQualities}
+                                    value={value.personalQualities}
                                     onChange={handleChange}
                                     variant="standard"
                                     helperText="Укажите свои личные качества"

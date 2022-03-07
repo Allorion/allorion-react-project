@@ -8,7 +8,7 @@ import {
     Routes,
     Route,
 } from "react-router-dom";
-import ResumeCreateTemplate from "./pages/resume/ResumeCreateTemplate";
+import ResumeCreateTemplate from "./pages/resume/resume-create/ResumeCreateTemplate";
 
 
 const App = () => {

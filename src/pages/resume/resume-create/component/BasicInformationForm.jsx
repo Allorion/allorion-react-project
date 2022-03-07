@@ -1,10 +1,14 @@
-import React, {useContext} from 'react';
+// ***************************************************
+// Компонент с добавлением базовой информации в резюме
+// ***************************************************
 
-// Контекст
-import BasicInformationContext from "../context/BasicInformationContext";
+
+import React, {useContext, useEffect} from "react";
+
+// Пользовательские хуки
+import useForm from "../../../../globalComponents/hooks/useForm";
 
 // MUI
-import {styled} from "@mui/material/styles";
 import {
     Box, Checkbox,
     Container,
@@ -21,42 +25,35 @@ import {
 } from "@mui/material";
 import {PhotoCamera} from "@mui/icons-material";
 
-// Пользовательские хуки
-import useForm from "../../../globalComponents/hooks/useForm";
+// Стили
+import InputImage from "../../../../globalComponents/style/InputImage";
 
-// Стиль для фото автора резюме
-const InputImage = styled('input')({
-    display: 'none',
-});
+// Контекст
+import BasicInformationContext from "../context/BasicInformationContext";
 
-function BasicInformation() {
 
-    // Контексты
-    const [values, setValues] = useContext(BasicInformationContext);
+// Стандартные значения полей формы для отправки в пользовательский хук заполнения формы
+const basicInformationField = {
+    picture: '', surname: '', name: '', patronymic: '', post: '', salary: '', busyness: '', workSchedule: '',
+    readinessBusinessTrips: false, phone: '', email: ''
+};
 
-    // Пользовательские хуки
-    const {handleChange} = useForm(setValues);
 
-    // Обработка действий
-    const handlePicture = event => {
-        setValues(values => ({
-            ...values,
-            'picture': URL.createObjectURL(event.target.files[0])
-        }));
-    }
+const BasicInformationForm = () => {
 
-    // Обновления данных не вохзможных для обновления через пользовательский хук
-    const handleReadinessBusinessTrips = (event) => {
-        setValues(values => ({
-            ...values,
-            'readinessBusinessTrips': event.target.checked
-        }));
-    }
+    // Получаем функции из пользовательского хука для заполнения формы
+    const {value, handleChange, handlePicture, handleCheckbox} = useForm(basicInformationField);
 
-    // Вывод на экран
+    // Получаем контекст из родительского компонента
+    const setBasicInformationField = useContext(BasicInformationContext);
+
+    // Сохраняем данные из формы в стейт родительского компонента
+    useEffect(() => {
+        setBasicInformationField(value);
+    }, [setBasicInformationField, value]);
+
     return (
         <React.Fragment>
-
             <Grid container pt={4}>
                 <Grid item={true} xs={0} md={2} xl={2}/>
                 <Grid item={true} xs={12} md={8} xl={8}>
@@ -79,7 +76,7 @@ function BasicInformation() {
                                                 />
                                                 <Avatar
                                                     alt="Прикрепить фото"
-                                                    src={values.picture}
+                                                    src={value.picture}
                                                     sx={{width: 228.72, height: 228.72, borderRadius: '4px'}}
                                                 >
                                                     <PhotoCamera/>
@@ -93,7 +90,7 @@ function BasicInformation() {
                                                 fullWidth
                                                 required
                                                 name='surname'
-                                                value={values.surname}
+                                                value={value.surname}
                                                 onChange={handleChange}
                                                 id="input-surname"
                                                 label="Фамилия"
@@ -104,7 +101,7 @@ function BasicInformation() {
                                                 fullWidth
                                                 required
                                                 name='name'
-                                                value={values.name}
+                                                value={value.name}
                                                 onChange={handleChange}
                                                 id='input-name'
                                                 label="Имя"
@@ -114,7 +111,7 @@ function BasicInformation() {
                                             <TextField
                                                 fullWidth
                                                 name='patronymic'
-                                                value={values.patronymic}
+                                                value={value.patronymic}
                                                 onChange={handleChange}
                                                 id="input-patronymic"
                                                 label="Отчество"
@@ -131,7 +128,7 @@ function BasicInformation() {
                                     required
                                     fullWidth
                                     name='post'
-                                    value={values.post}
+                                    value={value.post}
                                     onChange={handleChange}
                                     id="input-post"
                                     label="Должность"
@@ -145,7 +142,7 @@ function BasicInformation() {
                                         <TextField
                                             fullWidth
                                             name='salary'
-                                            value={values.salary}
+                                            value={value.salary}
                                             onChange={handleChange}
                                             id="input-salary"
                                             label="Желаемая зарплата"
@@ -162,7 +159,7 @@ function BasicInformation() {
                                                 labelId="select-busyness-label"
                                                 id="select-busyness"
                                                 name='busyness'
-                                                value={values.busyness}
+                                                value={value.busyness}
                                                 onChange={handleChange}
                                                 label="Занятость *"
                                             >
@@ -182,7 +179,7 @@ function BasicInformation() {
                                                 labelId="select-work-schedule-label"
                                                 id="select-work-schedule"
                                                 name='workSchedule'
-                                                value={values.workSchedule}
+                                                value={value.workSchedule}
                                                 onChange={handleChange}
                                                 label="График работы *"
                                             >
@@ -197,8 +194,9 @@ function BasicInformation() {
                                     </Grid>
                                     <Grid item xs={12} md={3} xl={3}>
                                         <FormControlLabel
+                                            name='readinessBusinessTrips'
                                             control={<Checkbox/>}
-                                            onClick={handleReadinessBusinessTrips}
+                                            onClick={handleCheckbox}
                                             label="Готовность к командировкам"
                                         />
                                     </Grid>
@@ -211,7 +209,7 @@ function BasicInformation() {
                                             fullWidth
                                             required
                                             name='phone'
-                                            value={values.phone}
+                                            value={value.phone}
                                             onChange={handleChange}
                                             id="input-phone"
                                             label="Телефон"
@@ -224,7 +222,7 @@ function BasicInformation() {
                                             fullWidth
                                             required
                                             name='email'
-                                            value={values.email}
+                                            value={value.email}
                                             onChange={handleChange}
                                             id="input-email"
                                             label="Электронная почта"
@@ -238,9 +236,8 @@ function BasicInformation() {
                     </Paper>
                 </Grid>
             </Grid>
-
         </React.Fragment>
     );
-}
+};
 
-export default React.memo(BasicInformation);
+export default React.memo(BasicInformationForm);

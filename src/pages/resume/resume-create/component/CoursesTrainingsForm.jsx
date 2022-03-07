@@ -1,44 +1,50 @@
-import React, {useContext, useEffect, useState} from 'react';
+// ************************************************
+// Компонент с формой "Курсы и тренинги" для резюме
+// ************************************************
 
-// MUI
-import {Box, Container, Grid, Paper, Stack, TextField} from "@mui/material";
-import {LocalizationProvider, MobileDatePicker} from "@mui/lab";
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
 
-// Дополнительные модули
-import ruLocale from 'date-fns/locale/ru';
-import useForm from "../../../globalComponents/hooks/useForm";
+import React, {useContext, useEffect} from "react";
+
+// Пользовательские хуки
+import useForm from "../../../../globalComponents/hooks/useForm";
 
 // Контекст
 import CoursesTrainingsContext from "../context/CoursesTrainingsContext";
 
-const CoursesTrainings = props => {
+// MUI
+import {Grid, Paper, Stack, TextField} from "@mui/material";
+import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
+import DeleteIcon from "@mui/icons-material/Delete";
+import IconButton from "@mui/material/IconButton";
+import {LocalizationProvider, MobileDatePicker} from "@mui/lab";
+import AdapterDateFns from "@mui/lab/AdapterDateFns";
 
-    const [coursesTrainingsField, setCoursesTrainingsField] = useState({
-        titleCourse: '', faculty: '', yearGraduationCourse: null, duration: ''
-    })
+// Сторонние модули
+import {ru} from "date-fns/locale";
 
-    // Добавление контекста родительского компонента
-    const setValues = useContext(CoursesTrainingsContext);
 
-    // Добавляем пользовательский хук для добавления данных в стейт компонента
-    const {handleChange} = useForm(setCoursesTrainingsField);
+// Стандартные значения полей формы для отправки в пользовательский хук заполнения формы
+const coursesTrainingsField = {
+    titleCourse: '', faculty: '', yearGraduationCourse: null, duration: ''
+};
 
-    // Добавление в стейт блока полей формы
+
+const CoursesTrainingsForm = props => {
+
+    // Получаем функции из пользовательского хука для заполнения формы
+    const {value, handleChange, handleInputDate} = useForm(coursesTrainingsField);
+
+    // Получаем данные из родительского компонента
+    const setCoursesTrainingsField = useContext(CoursesTrainingsContext);
+
+    // Передаем данные в родительский компонент при изменении полей формы
     useEffect(() => {
-        setValues(values => ({
+        setCoursesTrainingsField(values => ({
             ...values,
-            [props.count]: coursesTrainingsField
+            ['coursesTrainings' + props.keyCount]: value
         }));
-    }, [props.count, setValues, coursesTrainingsField]);
-
-    // Блок добавления данных не подходящих для добавления через пользовательский хук
-    const handleYearGraduationCourse = event => {
-        setCoursesTrainingsField(value => ({
-            ...value,
-            'yearGraduationCourse': event
-        }));
-    };
+    }, [props.keyCount, setCoursesTrainingsField, value]);
 
     return (
         <React.Fragment>
@@ -48,10 +54,15 @@ const CoursesTrainings = props => {
                     <Paper>
                         <Box pt={3} pb={3}>
                             <Container>
+                                <IconButton aria-label="delete" size="small"  onClick={() => {
+                                    props.delete(props.keyCount)
+                                }}>
+                                    <DeleteIcon/>
+                                </IconButton>
                                 <TextField
                                     fullWidth
                                     name='titleCourse'
-                                    value={coursesTrainingsField.titleCourse}
+                                    value={value.titleCourse}
                                     onChange={handleChange}
                                     id='input-title-course'
                                     label="Название курса\тренинга"
@@ -61,7 +72,7 @@ const CoursesTrainings = props => {
                                 <TextField
                                     fullWidth
                                     name='faculty'
-                                    value={coursesTrainingsField.faculty}
+                                    value={value.faculty}
                                     onChange={handleChange}
                                     id='input-faculty'
                                     label="Учебное заведение"
@@ -69,14 +80,15 @@ const CoursesTrainings = props => {
                                     helperText='Укажите учебное заведение где проходии курс\тренинг'
                                 />
                                 <Stack direction="row" spacing={2}>
-                                    <LocalizationProvider dateAdapter={AdapterDateFns} locale={ruLocale}>
+                                    <LocalizationProvider dateAdapter={AdapterDateFns} locale={ru}>
                                         <Stack>
                                             <MobileDatePicker
                                                 label="Год окончания"
                                                 views={['year']}
-                                                name='yearGraduationCourse'
-                                                value={coursesTrainingsField.yearGraduationCourse}
-                                                onChange={handleYearGraduationCourse}
+                                                value={value.yearGraduationCourse}
+                                                onChange={(event) => {
+                                                    handleInputDate(event, 'yearGraduationCourse')
+                                                }}
                                                 renderInput={(params) =>
                                                     <TextField {...params}
                                                                variant='standard'
@@ -88,7 +100,7 @@ const CoursesTrainings = props => {
                                     <TextField
                                         fullWidth
                                         name='duration'
-                                        value={coursesTrainingsField.duration}
+                                        value={value.duration}
                                         onChange={handleChange}
                                         id='input-duration'
                                         label="Продолжительность"
@@ -105,4 +117,4 @@ const CoursesTrainings = props => {
     );
 };
 
-export default React.memo(CoursesTrainings);
+export default React.memo(CoursesTrainingsForm);

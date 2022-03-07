@@ -33,7 +33,7 @@ export default function ResumeTemplate() {
             <Container>
                 <Grid container pt={4} pb={10}>
                     <Grid item sm={12} xs={12} md={12} xl={12}>
-                        <Link to="resume-create/" style={{
+                        <Link to="create/" style={{
                             textDecoration: 'none'
                         }}>
                             <ModeEditIcon sx={{color: 'text.primary'}}/>
